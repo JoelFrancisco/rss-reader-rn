@@ -1,19 +1,19 @@
 import * as SQLite from "expo-sqlite";
+import { Alert } from "react-native";
 
 const DATABASE_NAME = "db.sqlite";
 
 const SQL_CREATE_ENTRIES = [
-  `CREATE TABLE IF NOT EXISTS produtos (
+  `CREATE TABLE IF NOT EXISTS feeds (
       id INTEGER PRIMARY KEY autoincrement,
       name VARCHAR(255) NOT NULL,
-      qtd INTEGER DEFAULT 1 NOT NULL,
-      comprado VARCHAR(1) DEFAULT "N" NOT NULL
+      url VARCHAR(255) NOT NULL
     )`,
 ];
 
-let db: SQLite.WebSQLDatabase = null!;
+let db = null;
 
-export function executeSql(query: string, params = []) {
+export function executeSql(query, params = []) {
   if (!db) openDB();
 
   return new Promise((resolve, reject) => {
@@ -22,7 +22,7 @@ export function executeSql(query: string, params = []) {
         query,
         params,
         (_, rs) => resolve(rs),
-        (_, err): any => reject(err)
+        (_, err) => reject(err)
       );
     });
   });
@@ -36,7 +36,7 @@ export default function openDB() {
     SQL_CREATE_ENTRIES.map((query) => {
       tx.executeSql(query);
     });
-    (err: unknown) => console.warn(err);
+    (err) => console.log(err);
     () => console.log("Banco iniciado");
   });
 }
