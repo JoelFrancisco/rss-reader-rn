@@ -1,49 +1,36 @@
 import React, { useContext, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, PixelRatio, Dimensions } from "react-native";
+import { View, Text, StyleSheet, FlatList, PixelRatio, Dimensions, Alert } from "react-native";
 import { List } from "react-native-paper";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 import FeedContext from "../contexts/FeedContext";
 
 function Home({ navigation }) {
   const { feeds } = useContext(FeedContext);
 
-  const { isLoading, error, data } = useQuery(["test"], async () => {
-    const { data } = await axios.get("https://jsonplaceholder.typicode.com/todos/1");
-    return data;
-  });
-
-  if (isLoading) {
-    return (
-      <View>
-        <Text style={styles.text}>Carregando...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View>
-        <Text style={styles.text}>Ocorreu um erro</Text>
-      </View>
-    )
-  }
-
   return (
     <View style={styles.container}>
       <FlatList
         data={feeds}
-        keyExtractor={(item) => item.id} 
-        ItemSeparatorComponent={({ highlighted }) => (
-          <View style={[styles.rowSeparator, highlighted && styles.rowSeparatorHide]} />
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={() => (
+          <View>
+            <Text>Lista vazia...</Text>
+          </View>
         )}
         renderItem={({ item }) => (
           <List.Item
             title={item.name}
+            titleStyle={{ fontWeight: "600", color: "#2c3e50", fontSize: 20 }}
             style={styles.listContainer}
             onPress={() => navigation.navigate("Details", item)}
             onLongPress={() => navigation.navigate("AddFeed", item)}
+            right={() => (
+              <List.Icon
+                icon="pencil-box"
+                color="#8e44ad"
+                onPress={() => navigation.navigate("AddFeed", item)}
+              />
+            )}
           />
         )}
         style={{ flex: 1 }}
@@ -62,12 +49,13 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    width: Dimensions.get('window').width * 0.75,
+    justifyContent: 'center',
+    width: Dimensions.get('window').width * 0.95,
     height: 50,
     color: '#8e44ad',
-    backgroundColor: '##ecf0f1',
+    backgroundColor: '#ecf0f1',
     borderColor: '#9b59b6',
-    borderWidth: 1,
+    borderWidth: 2.5,
     borderRadius: 10,
     marginBottom: 5,
     marginTop: 5,
@@ -75,13 +63,6 @@ const styles = StyleSheet.create({
   textInfo: {
     flex: 1,
     color: "#000"
-  },
-  rowSeparator: {
-    backgroundColor: "#cdcdcd",
-    height: 1 / PixelRatio.get(), // altura automática do separador
-  },
-  rowSeparatorHide: {
-    opacity: 0.0,
   },
 });
 

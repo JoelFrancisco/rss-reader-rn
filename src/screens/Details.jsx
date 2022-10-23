@@ -4,21 +4,30 @@ import { Text } from 'react-native-paper';
 import { parse } from 'rss-to-json';
 
 function Details({ route, navigation }) {
-  const { id, name, url } = route.params;
+  const { url } = route.params;
 
   const [err, setErr] = useState();
   const [loading, setLoading] = useState(false);
   const [parsed, setParsed] = useState(false);
 
+  function handleFetchingError() {
+    setLoading(false);
+    setErr(true);
+  }
+
   async function getRssData() {
     try {
       const rss = await parse(url);
-      setParsed(rss);
-      setLoading(false);
+
+      if (rss) {
+        setParsed(rss);
+        setLoading(false);
+      } else {
+        handleFetchingError();
+      }
     }
     catch(err) {
-      setErr(true)
-      setLoading(false);
+      handleFetchingError();
     }
   }
 
@@ -43,8 +52,6 @@ function Details({ route, navigation }) {
     )
   }
 
-  //items -> title, description, link
-
   return (
     <View style={styles.container}>
       { parsed?.items != null ? (
@@ -56,9 +63,9 @@ function Details({ route, navigation }) {
           )}
           renderItem={({ item }) => (
             <View style={styles.listContainer}>
-              <Text style={{ marginBottom: 10, color: '#8e44ad' }}variant='titleSmall'>{item.title}</Text>
+              <Text style={{ marginBottom: 10, color: '#8e44ad', fontWeight: '800' }}variant='titleSmall'>{item.title}</Text>
               <Text style={{ color: '#2c3e50' }}variant='bodySmall'>{item.description}</Text>
-              <Text style={{ marginTop: 5, color: '#2c3e50' }} variant='labelSmall'onPress={() => Linking.openURL(item.link)}>{item.link}</Text>
+              <Text style={{ marginTop: 5, color: '#2c3e50', fontWeight: '800' }} variant='labelSmall'onPress={() => Linking.openURL(item.link)}>{item.link}</Text>
             </View>
           )}
           style={{ flex: 1 }}
@@ -78,12 +85,12 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 1,
-    width: Dimensions.get('window').width * 0.75,
+    width: Dimensions.get('window').width * 0.95,
     height: 200,
     padding: 15,
     flexDirection: 'column',
     justifyContent: 'space-around',
-    color: '#000',
+    color: '#2c3e50',
     backgroundColor: '##ecf0f1',
     borderColor: '#9b59b6',
     borderWidth: 1,
@@ -93,7 +100,7 @@ const styles = StyleSheet.create({
   },
   textInfo: {
     flex: 1,
-    color: "#000"
+    color: "#2c3e50"
   },
   rowSeparator: {
     backgroundColor: "#cdcdcd",

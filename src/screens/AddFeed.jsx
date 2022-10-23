@@ -30,10 +30,12 @@ function AddFeed({ route }) {
         });
 
         setFeeds([...items])
+        Alert.alert("Feed atualizado com sucesso")
       }
       else {
         const { insertId = null } = await executeSql("INSERT INTO feeds (name, url) VALUES(?, ?)", [name, url]);
         setFeeds([{ id: insertId, name, url },...feeds])
+        Alert.alert("Feed salvo com sucesso")
       }
     } 
     catch (err) {
@@ -43,10 +45,32 @@ function AddFeed({ route }) {
 
   return (
     <View style={styles.container}>
-      <TextInput value={name} label="Nome" onChangeText={text => setName(text)}/>
-      <TextInput value={url} label="URL" onChangeText={text => setUrl(text)}/>
+      <TextInput 
+        style={styles.inputs}
+        value={name} 
+        label="Nome"
+        mode="outlined"
+        onChangeText={text => setName(text)}
+        outlineColor="#8e44ad"
+      />
+      <TextInput 
+        style={styles.inputs}
+        value={url} 
+        label="URL" 
+        mode="outlined"
+        onChangeText={text => setUrl(text)}
+        outlineColor="#8e44ad"
+      />
 
-      <Button mode="contained" onPress={save}>Save</Button>
+      <Button 
+        style={styles.saveButton} 
+        icon="content-save" 
+        mode="contained" 
+        onPress={save}
+        buttonColor="#8e44ad"
+      >
+          Salvar
+        </Button>
     </View>
   );
 }
@@ -54,9 +78,24 @@ function AddFeed({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: "#FFF",
     flexDirection: 'column'
   },
+
+  inputs: {
+    width: Dimensions.get('window').width * 0.95,
+    marginTop: 5,
+    marginBottom: 5
+  },
+
+  saveButton: {
+    marginTop: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: Dimensions.get('window').width * 0.60
+  }
 });
 
 export default AddFeed;

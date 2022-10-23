@@ -1,11 +1,9 @@
 import { registerRootComponent } from "expo";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 
 import React, { useState, useEffect } from "react";
-import { Provider as PaperProvider } from "react-native-paper";
+import { IconButton, Provider as PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import FeedContext from "./contexts/FeedContext";
@@ -13,11 +11,10 @@ import FeedContext from "./contexts/FeedContext";
 import Home from "./screens/Home";
 import AddFeed from "./screens/AddFeed";
 
-import openDB from "./db";
 import { executeSql } from "./db";
 import Details from "./screens/Details";
 
-const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
 
 function App() {
@@ -43,38 +40,41 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <FeedContext.Provider value={{ feeds, setFeeds }}>
           <NavigationContainer>
-            <Drawer.Navigator initialRouteName="Home">
-              <Drawer.Screen 
+            <Stack.Navigator initialRouteName="Home">
+              <Stack.Screen 
                 name="Home" 
                 component={Home}
+                options={({ navigation }) => ({
+                  title: "Início",
+                  headerTintColor: "#2c3e50",
+                  headerRight: () => (
+                    <IconButton
+                      icon="plus-box"
+                      size={28}
+                      onPress={() => navigation.navigate("AddFeed")}
+                      iconColor="#8e44ad"
+                    />
+                  )
+                })}
               />
 
-              <Drawer.Screen 
+              <Stack.Screen 
                 name="AddFeed" 
                 component={AddFeed}
+                options={{ headerTintColor: "#2c3e50", title: 'Adicionar novo feed' }}
               />
 
-              <Drawer.Screen 
+              <Stack.Screen 
                 name="Details" 
                 component={Details}
+                options={{ headerTintColor: "#2c3e50", title: 'Detalhes' }}
               />
-            </Drawer.Navigator>
+            </Stack.Navigator>
           </NavigationContainer>
         </FeedContext.Provider>
       </QueryClientProvider>
     </PaperProvider>
   );
 }
-
-/*
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
-*/
 
 export default registerRootComponent(App);
